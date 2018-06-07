@@ -1,45 +1,44 @@
 <template>
    <div class="wrap" id="app">
-    <div class="board" v-for="(b, index) in baords" :key="index">
-      <div class="board-title">
-          {{ b.name }}
-          <div>...</div>
-      </div>
-      <div class="board-body">
-        <div class="board-item" v-for="(t, index) in getTasktsById(b.id)" :key="index">
-          {{ t.description }}
-        </div>
-      </div>
-      <div class="board-footer">
-        Add task ...
-      </div>
-    </div>
-    <div class="board add-board">
+    <Board :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
+   
+    <div class="board add-board" @click="toggleShowAddBoard" v-show=" ! showAddBoard">
        Add board ...
     </div>
+
+    <Creater :toggle.sync="showAddBoard" :callback="this.createBoard" class="board" v-show="showAddBoard" />
   </div>
 </template>
 
 <script>
+
+import Board from './components/Board'
+import Creater from './components/Creater'
+
 export default {
   name: 'app',
-    data: function() {
+  components: {
+    Board,
+    Creater
+  },
+  data() {
     return {
-        baords: [
-          {
-            id: 'todo',
-            name: 'ToDo'
-          },
-          {
-            id: 'inprogress',
-            name: 'InProgress'
-          },
-          {
-            id: 'done',
-            name: 'Done'
-          }
-        ],
-        tasks: [
+      showAddBoard: false,
+      baords: [
+        {
+          id: 'todo',
+          name: 'ToDo'
+        },
+        {
+          id: 'inprogress',
+          name: 'InProgress'
+        },
+        {
+          id: 'done',
+          name: 'Done'
+        }
+      ],
+      tasks: [
           {
             board_id: 'todo',
             description: 'asdf asdf asdf asdf asdf asdf'
@@ -68,15 +67,24 @@ export default {
     }
   },
   methods: {
-    addTask: function() {
-        
+    getTasktsById(board_id) {
+        return this.tasks.filter(function(i) {
+          return i.board_id == board_id;
+        })
     },
-    addBoard: function() {
-      
+    toggleShowAddBoard() {
+      this.showAddBoard = ! this.showAddBoard
     },
-    getTasktsById: function(board_id) {
-      return this.tasks.filter(function(i) {
-        return i.board_id == board_id;
+    createBoard(value) {
+      this.baords.push({
+        id: 'test',
+        name: value.value
+      });
+    },
+    createTask(task) {
+      this.tasks.push({
+        board_id: task.id,
+        description: task.value
       })
     }
   }
@@ -85,126 +93,61 @@ export default {
 
 <style>
   body {
-  height: 100vh;
-  position: relative;
-}
+    height: 100vh;
+    position: relative;
+  }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-.wrap {
-  display: flex;
-  align-items:flex-start;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  font-family: arial, sans-serif;
-}
+  .wrap {
+    display: flex;
+    align-items:flex-start;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-family: arial, sans-serif;
+  }
 
-.board {
-  width: 250px;
-  border-radius: 5px;
-  border: 1px solid #fff;
-  padding: 3px;
-  background: rgba(255, 255, 255, 0.4);
-  margin-left: 20px;
-  position: relative;
-  min-height: 70px;
-  padding-bottom: 40px;
-}
+  .board.add-board {
+    font-size: 14px;
+    padding: 10px;
+    color: #555;
+    cursor: pointer;
+    min-height: auto;
+  }
 
-.board:first-child {
-  margin-left: 0;
-}
+  .board.add-board:hover {
+    background-color: #eee;
+  }
 
-.board .board-title {
-  font-size: 14px;
-  padding: 10px 15px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  .btn {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 3px;
+  }
 
-.board .board-title div {
-  color: #555;
-  height: 20px;
-  text-align: center;
-  width: 20px;
-  line-height: 15px;
-  border-radius: 3px;
-}
+  .btn.success {
+    background-color: #42b983;
+    color: #fff;
+  }
 
-.board .board-title div:hover {
-  cursor: pointer;
-  background-color: #ddd;
-}
+  .btn.error {
+    background-color: #f66;
+    color: #fff;
+  }
 
-.board .board-footer {
-  position: absolute;
-  padding: 10px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  font-size: 13px;
-  color: #555;
-}
-
-.board .board-footer:hover {
-  background-color: #eee;
-  cursor: pointer;
-}
-
-.board .board-body .board-item {
-  padding: 10px;
-  border-radius: 3px;
-  margin: 0 5px 0;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 10px;
-}
-
-.board .board-body .board-item:last-child {
-  margin-bottom: 0;
-}
-
-.board.add-board {
-  font-size: 14px;
-  padding: 10px;
-  color: #555;
-  cursor: pointer;
-  min-height: auto;
-}
-
-.board.add-board:hover {
-  background-color: #eee;
-}
-
-.btn {
-  padding: 10px 15px;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 3px;
-}
-
-.btn.success {
-  background-color: green;
-}
-
-.btn.error {
-  background-color: red;
-}
-
-.btn:hover {
-  cursor: pointer;
-  opacity: 0.9;
-}
+  .btn:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
 </style>
