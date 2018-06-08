@@ -1,11 +1,11 @@
 <template>
-    <div class="board">
+    <div class="board" :data-board="id">
       <div class="board-title">
           {{ name }}
           <div>...</div>
       </div>
       <div class="board-body">
-        <Task :description="t.description"  v-for="(t, index) in tasks" :key="index" />
+        <Task :moveTask="moveTask" :description="t.description" :id="t.id"  v-for="(t, index) in tasks" :key="index" />
         <Creater :toggle.sync="showAddTask" :callback="this.createTask" :meta="{id}" class="board-item"  v-show="showAddTask" />
       </div>
       <div class="board-footer" v-show=" ! showAddTask" @click="toggleShowAddTask()">
@@ -19,7 +19,7 @@
 
   export default {
     name: 'Board',
-    props: ['name', 'tasks', 'id', 'createTask'],
+    props: ['name', 'tasks', 'id', 'createTask', 'moveTask'],
     components: {
       Task,
       Creater

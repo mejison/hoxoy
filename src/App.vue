@@ -1,6 +1,6 @@
 <template>
    <div class="wrap" id="app">
-    <Board :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
+    <Board :moveTask="moveTask" :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
    
     <div class="board add-board" @click="toggleShowAddBoard" v-show=" ! showAddBoard">
        Add board ...
@@ -40,26 +40,32 @@ export default {
       ],
       tasks: [
           {
+            id: 1,
             board_id: 'todo',
             description: 'asdf asdf asdf asdf asdf asdf'
           },
           {
+            id: 2,
             board_id: 'todo',
             description: 'asdf asdf asdf asdf asdf asdf'
           },
           {
+            id: 3,
             board_id: 'todo',
             description: 'asdf asdf asdf asdf asdf asdf'
           },
           {
+            id: 4,
             board_id: 'inprogress',
             description: 'asdf asdf asdf asdf asdf asdf'
           },
           {
+            id: 5,
             board_id: 'inprogress',
             description: 'asdf asdf asdf asdf asdf asdf'
           },
           {
+            id: 6,
             board_id: 'done',
             description: 'asdf asdf asdf asdf asdf asdf'
           }
@@ -85,6 +91,14 @@ export default {
       this.tasks.push({
         board_id: task.id,
         description: task.value
+      })
+    },
+    moveTask(task_id, board_id) {
+      let task;
+      this.tasks.map((t) => {
+        if (t.id == task_id) {
+          t.board_id = board_id
+        }
       })
     }
   }
