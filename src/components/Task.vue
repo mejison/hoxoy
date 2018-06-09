@@ -1,9 +1,14 @@
 <template>
-    <div class="board-item" :data-task="id" :style="{'left': positionX + 'px', 'top': positionY + 'px'}" :class="{'dragging': this.dragging, 'pointer': ! this.dragging}" @mouseup="this.dragAndDropEnd" @mousedown="this.dragAndDropBegin">
-        {{ description }}
+    <div>
+        <div class="board-item" :data-task="id" :style="{'left': positionX + 'px', 'top': positionY + 'px'}" :class="{'dragging': this.dragging, 'pointer': ! this.dragging}" @mouseup="this.dragAndDropEnd" @mousedown="dragAndDropBegin">
+            {{ description }}
+        </div>
+        <Modal v-show="showModalToggle" :toggle.sync="showModalToggle" />
     </div>
 </template>
 <script>
+    import Modal from './Modal'
+
     export default {
         name: 'Task',
         props: [
@@ -11,8 +16,12 @@
             'moveTask',
             'id'
         ],
+        components: {
+            Modal
+        },
         data() {
             return {
+                showModalToggle: false,
                 dragging: false,
                 positionX: 0,
                 positionY: 0,
@@ -20,13 +29,16 @@
                 heightTask: 0,
                 bodyElement: null,
                 boardsElement: null,
-                taskDragging: null,
+                taskDragging: null
             }
         },
         mounted() {
             this.init()
         },
         methods: {
+            showModal() {
+                this.showModalToggle = true
+            },
             init() {
                 this.bodyElement = window.document.getElementById('app')
                 this.boardsElement = window.document.getElementsByClassName('board')
@@ -46,6 +58,9 @@
                 let {clientX, clientY} = e
                 this.positionX = clientX - this.widthTask / 2
                 this.positionY = clientY - this.heightTask / 2
+
+                this.positionXold =  this.positionX;
+                this.positionYold =  this.positionY;
 
                 this.addEmptyElementWhenHover();
             },
@@ -96,10 +111,19 @@
                 this.heightTask = document.getElementsByClassName("board-item")[0].offsetHeight
             },
             dragAndDropBegin(e) {
-                this.dragging = true
-                this.taskDragging = e.target.dataset.task
-                this.bodyElement
-                    .addEventListener('mousemove', this.mouseMoveListener, false)
+                let x = this.positionX,
+                    y = this.positionY
+
+                setTimeout(() => {
+                    if (x != this.positionX && y != this.positionY) {
+                        this.dragging = true
+                        this.taskDragging = e.target.dataset.task
+                        this.bodyElement
+                                .addEventListener('mousemove', this.mouseMoveListener, false)
+                    } else {
+                        this.showModal(e)
+                    }
+                }, 300);
             },
             mouseMoveListener(e) {
                 this.setWidthAndHeightTask()
