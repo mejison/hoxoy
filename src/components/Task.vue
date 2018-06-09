@@ -18,56 +18,99 @@
                 positionY: 0,
                 widthTask: 0,
                 heightTask: 0,
-                taskElement: null,
+                bodyElement: null,
+                boardsElement: null,
                 taskDragging: null,
             }
         },
         mounted() {
-            this.setWidthandHeightTask();
-            this.taskElement = window.document.getElementById('app')
-            
-            this.taskElement
-                .addEventListener('mousemove', (e) => {
-                    let {clientX, clientY} = e
-                    this.positionX = clientX - this.widthTask / 2;
-                    this.positionY = clientY - this.heightTask / 2;    
-                }, false);
-
-            this.taskElement
-                .addEventListener('mouseup', (e) => {
-                    let {clientX, clientY} = e
-                    let boards = window.document.getElementsByClassName('board')
-                    for(var t in boards) {
-                        var {offsetTop, offsetLeft, offsetWidth, offsetHeight} = boards[t]
-                        if (this.positionX >= offsetLeft && this.positionX <=  offsetLeft + offsetWidth &&
-                            this.positionY >= offsetTop && this.positionY <=  offsetTop + offsetHeight &&
-                            this.taskDragging) {
-                            this.moveTask(this.taskDragging, boards[t].dataset.board)
-                        }
-                    }
-                }, false)            
+            this.init()
         },
         methods: {
-            setWidthandHeightTask() {
+            init() {
+                this.bodyElement = window.document.getElementById('app')
+                this.boardsElement = window.document.getElementsByClassName('board')
+    
+                this.bodyElement
+                    .addEventListener('mousemove', this.documentListenerMouseMove, false)
+            
+                this.bodyElement
+                    .addEventListener('mouseup', this.documentListenerMouseUp, false)
+
+                window.document.querySelectorAll('.empty-item').forEach((elm) => {
+                    elm.remove();
+                })
+            },
+            documentListenerMouseMove(e) {
+               this.setWidthAndHeightTask();
+                let {clientX, clientY} = e
+                this.positionX = clientX - this.widthTask / 2
+                this.positionY = clientY - this.heightTask / 2
+
+                this.addEmptyElementWhenHover();
+            },
+            documentListenerMouseUp(e) {
+                let self = this;
+                 let {clientX, clientY} = e
+                    let boards = this.boardsElement
+                    for(var t in boards) {
+                        var {offsetTop, offsetLeft, offsetWidth, offsetHeight} = boards[t]
+                        if (this.positionX > offsetLeft && this.positionX <  offsetLeft + offsetWidth &&
+                            this.positionY > offsetTop && this.positionY <  offsetTop + offsetHeight) {
+                                
+                                if (this.taskDragging) {
+                                    this.moveTask(this.taskDragging, boards[t].dataset.board)
+
+                                    this.bodyElement
+                                        .removeEventListener('mouseup', this.documentListenerMouseUp)
+                                    this.bodyElement
+                                        .removeEventListener('mousemove', this.documentListenerMouseMove)
+                                    this.taskDragging = null
+                                    this.dragging = false
+                                    this.init()
+                                }
+                        }
+                    }
+            },
+            addEmptyElementWhenHover() {
+                let boards = this.boardsElement
+                for(var t in boards) {
+                    var {offsetTop, offsetLeft, offsetWidth, offsetHeight} = boards[t]
+                    if (this.positionX > offsetLeft && this.positionX <  offsetLeft + offsetWidth &&
+                        this.positionY > offsetTop && this.positionY <  offsetTop + offsetHeight) {
+                        
+                        if (this.dragging) {
+                            window.document.querySelectorAll('.empty-item').forEach((elm) => {
+                                elm.remove()
+                            })
+                            var div = window.document.createElement('div')
+                            div.className = "empty-item"
+                            var elm = window.document.querySelector("[data-board='" + boards[t].dataset.board + "'] div.board-body")
+                            elm.appendChild(div)
+                        }
+                    }
+                }
+            },
+            setWidthAndHeightTask() {
                 this.widthTask = document.getElementsByClassName("board-item")[0].offsetWidth
                 this.heightTask = document.getElementsByClassName("board-item")[0].offsetHeight
             },
             dragAndDropBegin(e) {
-                this.dragging = true;
+                this.dragging = true
                 this.taskDragging = e.target.dataset.task
-                window.document.getElementById('app')
+                this.bodyElement
                     .addEventListener('mousemove', this.mouseMoveListener, false)
             },
             mouseMoveListener(e) {
-                this.setWidthandHeightTask();
+                this.setWidthAndHeightTask()
                 let {clientX, clientY} = e
                 this.positionX = clientX - this.widthTask / 2
                 this.positionY = clientY - this.heightTask / 2
             },
             dragAndDropEnd(e) {
                 this.dragging = false
-                this.taskElement
-                    .removeEventListener('mousemove', this.mouseMoveListener)
+                this.bodyElement
+                    .removeEventListener('mousemove', this.mouseMoveListener, false)
             }
         }
     }

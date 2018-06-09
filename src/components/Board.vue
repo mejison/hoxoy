@@ -46,6 +46,10 @@
     margin-left: 20px;
     position: relative;
     padding-bottom: 40px;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */      
   }
 
   .board:first-child {
@@ -88,6 +92,13 @@
   .board .board-footer:hover {
     background-color: #eee;
     cursor: pointer;
+  }
+
+  .board .empty-item {
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 15px;
+    margin: 0 5px 0;
   }
 </style>
 
