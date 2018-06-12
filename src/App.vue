@@ -89,12 +89,12 @@ export default {
     },
     createTask(task) {
       this.tasks.push({
+        id: this.tasks[this.tasks.length - 1].id + 1,
         board_id: task.id,
         description: task.value
       })
     },
     moveTask(task_id, board_id) {
-      let task;
       this.tasks.map((t) => {
         if (t.id == task_id) {
           t.board_id = board_id

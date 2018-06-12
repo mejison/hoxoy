@@ -64,28 +64,26 @@
 
                 this.addEmptyElementWhenHover();
             },
-            documentListenerMouseUp(e) {
-                let self = this;
-                 let {clientX, clientY} = e
-                    let boards = this.boardsElement
-                    for(var t in boards) {
-                        var {offsetTop, offsetLeft, offsetWidth, offsetHeight} = boards[t]
-                        if (this.positionX > offsetLeft && this.positionX <  offsetLeft + offsetWidth &&
-                            this.positionY > offsetTop && this.positionY <  offsetTop + offsetHeight) {
-                                
-                                if (this.taskDragging) {
-                                    this.moveTask(this.taskDragging, boards[t].dataset.board)
+            documentListenerMouseUp() {
+                let boards = this.boardsElement
+                for(var t in boards) {
+                    var {offsetTop, offsetLeft, offsetWidth, offsetHeight} = boards[t]
+                    if (this.positionX > offsetLeft && this.positionX <  offsetLeft + offsetWidth &&
+                        this.positionY > offsetTop && this.positionY <  offsetTop + offsetHeight) {
+                            
+                            if (this.taskDragging) {
+                                this.moveTask(this.taskDragging, boards[t].dataset.board)
 
-                                    this.bodyElement
-                                        .removeEventListener('mouseup', this.documentListenerMouseUp)
-                                    this.bodyElement
-                                        .removeEventListener('mousemove', this.documentListenerMouseMove)
-                                    this.taskDragging = null
-                                    this.dragging = false
-                                    this.init()
-                                }
-                        }
+                                this.bodyElement
+                                    .removeEventListener('mouseup', this.documentListenerMouseUp)
+                                this.bodyElement
+                                    .removeEventListener('mousemove', this.documentListenerMouseMove)
+                                this.taskDragging = null
+                                this.dragging = false
+                                this.init()
+                            }
                     }
+                }
             },
             addEmptyElementWhenHover() {
                 let boards = this.boardsElement
@@ -131,7 +129,7 @@
                 this.positionX = clientX - this.widthTask / 2
                 this.positionY = clientY - this.heightTask / 2
             },
-            dragAndDropEnd(e) {
+            dragAndDropEnd() {
                 this.dragging = false
                 this.bodyElement
                     .removeEventListener('mousemove', this.mouseMoveListener, false)
