@@ -2,7 +2,14 @@
     <div class="board" :data-board="id">
       <div class="board-title">
           {{ name }}
-          <div>...</div>
+          <div class="relative">
+            <div class="label-actions" v-dropdown data-position="left" v-bind:data-target="'actions-' + id">...</div>
+            <div class="dropdown" v-bind:data-target="'actions-' + id">
+                <div class="item">
+                  <a href="#" @click="removeBoard(id)">Remove</a>
+                </div>
+            </div>
+          </div>
       </div>
       <div class="board-body">
         <Task :moveTask="moveTask" :description="t.description" :id="t.id"  v-for="(t, index) in tasks" :key="index" />
@@ -19,7 +26,7 @@
 
   export default {
     name: 'Board',
-    props: ['name', 'tasks', 'id', 'createTask', 'moveTask'],
+    props: ['name', 'tasks', 'id', 'createTask', 'moveTask', 'removeBoard'],
     components: {
       Task,
       Creater
@@ -39,6 +46,7 @@
 <style>
   .board {
     width: 250px;
+    max-width: 250px;
     border-radius: 5px;
     border: 1px solid #fff;
     padding: 3px;
@@ -65,7 +73,7 @@
     align-items: center;
   }
 
-  .board .board-title div {
+  .board .board-title .label-actions {
     color: #555;
     height: 20px;
     text-align: center;
@@ -74,7 +82,7 @@
     border-radius: 3px;
   }
 
-  .board .board-title div:hover {
+  .board .board-title .label-actions:hover {
     cursor: pointer;
     background-color: #ddd;
   }

@@ -1,12 +1,16 @@
 <template>
-   <div class="wrap" id="app">
-    <Board :moveTask="moveTask" :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
-   
-    <div class="board add-board" @click="toggleShowAddBoard" v-show=" ! showAddBoard">
-       Add board ...
-    </div>
+  <div>
+      <Header />
+      <div class="wrap" id="app" :style="{width}">
+      
+      <Board :moveTask="moveTask" :removeBoard="removeBoard" :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
 
-    <Creater :toggle.sync="showAddBoard" :callback="this.createBoard" class="board" v-show="showAddBoard" />
+      <div class="board add-board" @click="toggleShowAddBoard" v-show=" ! showAddBoard">
+        Add board ...
+      </div>
+
+      <Creater :toggle.sync="showAddBoard" :callback="this.createBoard" class="board" v-show="showAddBoard" />
+    </div>
   </div>
 </template>
 
@@ -14,16 +18,19 @@
 
 import Board from './components/Board'
 import Creater from './components/Creater'
+import Header from './components/Header'
 
 export default {
   name: 'app',
   components: {
     Board,
-    Creater
+    Creater,
+    Header
   },
   data() {
     return {
       showAddBoard: false,
+      width: 'auto',
       baords: [
         {
           id: 'todo',
@@ -83,9 +90,11 @@ export default {
     },
     createBoard(value) {
       this.baords.push({
-        id: 'test',
+        id: value.value.toLowerCase(),
         name: value.value
-      });
+      })
+
+      this.checkExpansion()
     },
     createTask(task) {
       this.tasks.push({
@@ -100,6 +109,19 @@ export default {
           t.board_id = board_id
         }
       })
+    },
+    checkExpansion() {
+      if ((this.baords.length * 300) > document.body.offsetWidth) {
+        this.width = 300 * this.baords.length + 'px'
+        return
+      }
+      this.width = 'auto'
+    },
+    removeBoard(board_id) {
+      this.baords = this.baords.filter(function(b) {
+          return b.id != board_id;
+      })
+      this.checkExpansion()
     }
   }
 }
@@ -121,6 +143,8 @@ export default {
     display: flex;
     align-items:flex-start;
     padding: 20px;
+    overflow: auto;
+    padding-top: 50px;
     background: rgba(0, 0, 0, 0.4);
     position: absolute;
     left: 0;
@@ -164,4 +188,52 @@ export default {
     cursor: pointer;
     opacity: 0.9;
   }
+
+  /* dropdown */
+
+.dropdown {
+  font-size: 14px;
+  font-family: arial;
+  background-color: #ccc;
+  color: #333;
+  width: 200px;
+  border-radius: 5px;
+  padding: 15px;
+  display: none;
+  position: absolute;  
+  top: 0;
+  box-shadow: 0 1px #FFFFFF inset, 0 1px 3px rgba(34, 25, 25, 0.4);
+}
+
+.dropdown .item {
+  margin-bottom: 15px;
+  
+}
+
+.dropdown .item a {
+  color: #333;
+  display: inline-block;
+  width: 100%;
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.dropdown .item a:hover {
+  text-decoration: underline;
+}
+
+
+.dropdown .item:last-child {
+  margin-bottom: 0;
+}
+
+.dropdown.active {
+  display: block;
+  z-index: 2;
+}
+
+.relative {
+  position: relative;
+}
 </style>
