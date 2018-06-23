@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="board-item" :data-task="id" :style="{'left': positionX + 'px', 'top': positionY + 'px'}" :class="{'dragging': this.dragging, 'pointer': ! this.dragging}" @mouseup="this.dragAndDropEnd" @mousedown="dragAndDropBegin">
-            {{ description }}
+        <div class="board-item" :data-task="hash" :style="{'left': positionX + 'px', 'top': positionY + 'px'}" :class="{'dragging': this.dragging, 'pointer': ! this.dragging}" @mouseup="this.dragAndDropEnd" @mousedown="dragAndDropBegin">
+            {{ name }}
         </div>
         <Modal v-show="showModalToggle" :toggle.sync="showModalToggle" />
     </div>
@@ -12,9 +12,9 @@
     export default {
         name: 'Task',
         props: [
-            'description',
+            'name',
             'moveTask',
-            'id'
+            'hash'
         ],
         components: {
             Modal

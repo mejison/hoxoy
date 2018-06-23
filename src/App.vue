@@ -3,7 +3,7 @@
       <Header />
       <div class="wrap" id="app" :style="{width}">
       
-      <Board :moveTask="moveTask" :removeBoard="removeBoard" :createTask="createTask" :tasks="getTasktsById(b.id)" :id="b.id" :name="b.name" v-for="(b, index) in baords" :key="index" />
+      <Board :moveTask="moveTask" :removeBoard="removeBoard" :createTask="createTask" :tasks="getTasktsById(b.hash)" :id="b.hash" :name="b.name" v-for="(b, index) in baords" :key="index" />
 
       <div class="board add-board" @click="toggleShowAddBoard" v-show=" ! showAddBoard">
         Add board ...
@@ -19,6 +19,7 @@
 import Board from './components/Board'
 import Creater from './components/Creater'
 import Header from './components/Header'
+import  api from './api'
 
 export default {
   name: 'app',
@@ -31,55 +32,27 @@ export default {
     return {
       showAddBoard: false,
       width: 'auto',
-      baords: [
-        {
-          id: 'todo',
-          name: 'ToDo'
-        },
-        {
-          id: 'inprogress',
-          name: 'InProgress'
-        },
-        {
-          id: 'done',
-          name: 'Done'
-        }
-      ],
-      tasks: [
-          {
-            id: 1,
-            board_id: 'todo',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          },
-          {
-            id: 2,
-            board_id: 'todo',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          },
-          {
-            id: 3,
-            board_id: 'todo',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          },
-          {
-            id: 4,
-            board_id: 'inprogress',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          },
-          {
-            id: 5,
-            board_id: 'inprogress',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          },
-          {
-            id: 6,
-            board_id: 'done',
-            description: 'asdf asdf asdf asdf asdf asdf'
-          }
-        ]
+      baords: [],
+      tasks: []
     }
   },
+  created() {
+    this.getAllBoards();
+    this.getAllTasks();
+  },
   methods: {
+    getAllBoards() {
+      let self = this;
+      api.getAllBoards().then((data) => {
+        self.baords = data;
+      })
+    },
+    getAllTasks() {
+      let self = this;
+      api.getAllTasks().then((data) => {
+        self.tasks = data;
+      })
+    },
     getTasktsById(board_id) {
         return this.tasks.filter(function(i) {
           return i.board_id == board_id;
@@ -94,21 +67,32 @@ export default {
         name: value.value
       })
 
+      api.createBoard(value).then(() => {
+        this.getAllBoards();
+      })
+
       this.checkExpansion()
     },
     createTask(task) {
-      this.tasks.push({
-        id: this.tasks[this.tasks.length - 1].id + 1,
+      
+      let data = {
         board_id: task.id,
-        description: task.value
-      })
+        name: task.value
+      }, self = this
+
+      api.createTask(data)
+        .then(() => {
+          self.getAllTasks();
+        })
     },
     moveTask(task_id, board_id) {
       this.tasks.map((t) => {
-        if (t.id == task_id) {
+        if (t.hash == task_id) {
           t.board_id = board_id
         }
       })
+
+      api.updateTask(task_id, {board_id});
     },
     checkExpansion() {
       if ((this.baords.length * 300) > document.body.offsetWidth) {

@@ -12,7 +12,7 @@
           </div>
       </div>
       <div class="board-body">
-        <Task :moveTask="moveTask" :description="t.description" :id="t.id"  v-for="(t, index) in tasks" :key="index" />
+        <Task :moveTask="moveTask" :name="t.name" :hash="t.hash"  v-for="(t, index) in tasks" :key="index" />
         <Creater :toggle.sync="showAddTask" :callback="this.createTask" :meta="{id}" class="board-item"  v-show="showAddTask" />
       </div>
       <div class="board-footer" v-show=" ! showAddTask" @click="toggleShowAddTask()">
