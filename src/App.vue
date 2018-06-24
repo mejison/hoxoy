@@ -102,9 +102,16 @@ export default {
       this.width = 'auto'
     },
     removeBoard(board_id) {
+      let self = this;
       this.baords = this.baords.filter(function(b) {
-          return b.id != board_id;
+          return b.hash != board_id;
       })
+
+      api.deleteBoard(board_id)
+        .then(() => {
+          self.getAllBoards();
+        })
+
       this.checkExpansion()
     }
   }

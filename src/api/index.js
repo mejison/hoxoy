@@ -23,6 +23,12 @@ export default {
         })
         .then(responseHandler)
     },
+    deleteBoard(hash) {
+        return fetch(API_URL + '/boards/' + hash, {
+            method: 'delete'
+        })
+        .then(responseHandler)
+    },
     getAllTasks() {
         return fetch(API_URL + '/tasks')
             .then(responseHandler)
